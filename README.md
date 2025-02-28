@@ -2,9 +2,8 @@
 
 A library for interfacing with NeuroSky devices over Bluetooth, using Rust.
 
-::: warning
-Due to limitations in the availability of `bluez`, this library is only compatible with Linux systems.
-:::
+> [!IMPORTANT]
+> Due to limitations in the availability of `bluez`, this library is only compatible with Linux systems.
 
 ## Features
 
