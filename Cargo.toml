@@ -2,6 +2,26 @@
 name = "cerebrust"
 version = "0.1.0"
 edition = "2024"
+description = "Cerebrust is a simple, easy-to-use library for working with NeuroSky devices under Rust."
+authors = ["Nan Huang <teddyhuangnan@gmail.com>"]
+repository = "https://github.com/TeddyHuang-00/cerebrust"
+readme = "README.md"
+license = "MIT"
+categories = [
+    "hardware-support",
+    "asynchronous",
+    "parser-implementations",
+    "parsing",
+]
+keywords = [
+    "neurosky",
+    "mindwave",
+    "bluetooth",
+    "rfcomm",
+    "cerebrust",
+    "brain-computer-interface",
+    "bci",
+]
 
 [dependencies]
 bluer = { version = "0.17.3", features = ["rfcomm", "bluetoothd"] }
