@@ -25,7 +25,7 @@ Create a `DeviceConfig` and connect to the device:
 use cerebrust::device::DeviceConfig;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> bluer::Result<()> {
     let stream = DeviceConfig::default()
         .with_adapter("hci0".to_string())
         .with_name("MyndBand".to_string())
