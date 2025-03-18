@@ -109,6 +109,52 @@ pub struct Packet {
     pub eeg_power: Option<Power>,
 }
 
+/// Represents the different types of packets that can be received from the
+/// NeuroSky device. Each variant corresponds to a specific combination of data
+/// that can be received.
+#[derive(Debug)]
+pub enum PacketVariant {
+    /// Packet with only raw wave value @ 512Hz
+    RawWave { raw_wave: i16 },
+    /// Packet with eSense values and EEG power spectrum @ 1Hz
+    EegPower {
+        poor_signal: u8,
+        attention: u8,
+        meditation: u8,
+        eeg_power: Power,
+    },
+}
+
+impl TryInto<PacketVariant> for Packet {
+    type Error = &'static str;
+
+    /// Attempts to convert the `Packet` into a `PacketVariant`. If the packet
+    /// contains both eSense values and EEG power spectrum, it returns the
+    /// `EegPower` variant. If it contains only the raw wave value, it returns
+    /// the `RawWave` variant. If neither is present, it returns an error.
+    fn try_into(self) -> Result<PacketVariant, Self::Error> {
+        if let (Some(poor_signal), Some(attention), Some(meditation), Some(eeg_power)) = (
+            self.poor_signal,
+            self.attention,
+            self.meditation,
+            self.eeg_power,
+        ) {
+            Ok(PacketVariant::EegPower {
+                poor_signal,
+                attention,
+                meditation,
+                eeg_power,
+            })
+        } else if let Some(raw_wave) = self.raw_wave {
+            Ok(PacketVariant::RawWave { raw_wave })
+        } else {
+            Err("Invalid packet type")
+        }
+    }
+}
+
+/// Represents a data reader that reads and parses data packets from the
+/// NeuroSky device.
 pub struct DataReader {
     stream: Stream,
 }
