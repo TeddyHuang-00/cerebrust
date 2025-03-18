@@ -1,6 +1,6 @@
 [package]
 name = "cerebrust"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Cerebrust is a simple, easy-to-use library for working with NeuroSky devices under Rust."
 authors = ["Nan Huang <teddyhuangnan@gmail.com>"]
