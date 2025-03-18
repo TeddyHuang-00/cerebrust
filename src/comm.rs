@@ -39,6 +39,9 @@ use futures::executor::block_on;
 use std::io::Error;
 use tokio::io::AsyncReadExt;
 
+/// Represents the different data codes used in the NeuroSky device communication.
+/// Each code corresponds to a specific type of data that can be received from
+/// the device. The codes are defined as per the NeuroSky protocol.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Code {
     /// Single-byte u8
@@ -74,6 +77,7 @@ impl From<u8> for Code {
     }
 }
 
+/// Represents the EEG power spectrum values.
 #[derive(Debug, Default)]
 pub struct Power {
     /// Delta (0.5 ~ 2.75 Hz)
@@ -94,6 +98,7 @@ pub struct Power {
     pub mid_gamma: u32,
 }
 
+/// Represents a data packet received from the NeuroSky device.
 #[derive(Debug, Default)]
 pub struct Packet {
     /// Signal quality (0 ~ 255)
@@ -156,6 +161,7 @@ impl TryInto<PacketVariant> for Packet {
 /// Represents a data reader that reads and parses data packets from the
 /// NeuroSky device.
 pub struct DataReader {
+    /// The RFCOMM stream to read data from
     stream: Stream,
 }
 
@@ -164,6 +170,11 @@ impl DataReader {
         DataReader { stream }
     }
 
+    /// Reads the next data packet from the stream. It synchronizes with the
+    /// NeuroSky device, reads the packet length, and then reads the payload
+    /// and checksum. It verifies the checksum and parses the payload into a
+    /// `Packet` struct. If the packet is corrupted or invalid, it retries
+    /// reading the packet until a valid one is received.
     pub async fn poll_next(&mut self) -> Result<Packet, Error> {
         let mut packet = Packet::default();
         loop {
@@ -270,6 +281,9 @@ impl DataReader {
 impl Iterator for DataReader {
     type Item = Packet;
 
+    /// Polls the next packet from the stream. It blocks until a valid packet
+    /// is received. If an error occurs while reading the packet, it stops
+    /// the iterator.
     fn next(&mut self) -> Option<Self::Item> {
         match block_on(self.poll_next()) {
             Ok(packet) => Some(packet),

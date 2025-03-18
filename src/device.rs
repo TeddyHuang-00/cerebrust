@@ -37,6 +37,7 @@ use std::io;
 use std::time::Duration;
 use tokio::time::timeout;
 
+/// Configuration for connecting to a NeuroSky device over Bluetooth.
 #[derive(Debug)]
 pub struct DeviceConfig {
     /// The name of the Bluetooth adapter to use.
