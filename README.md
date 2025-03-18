@@ -55,6 +55,24 @@ async fn main() {
 }
 ```
 
+Try to convert the packet into a specific type:
+
+```rust
+use cerebrust::comm::PacketVariant;
+//...
+#[tokio::main]
+async fn main() {
+    // ...
+    match packet.try_into() {
+        Ok(PacketVariant::RawWave { .. }) => {}
+        Ok(PacketVariant::EegPower { .. }) => {}
+        Err(e) => {
+            eprintln!("Error parsing packet: {:?}", e);
+        }
+    }
+}
+```
+
 See the [examples](./examples) for full usage (requires a NeuroSky device).
 
 ## License
