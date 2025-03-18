@@ -15,7 +15,7 @@ async fn main() {
     // Create a data reader
     let mut data_reader = DataReader::new(stream);
     // Poll data packets asynchronously
-    let start_time = Instant::now();
+    let timer = Instant::now();
     while let Ok(packet) = data_reader.poll_next().await {
         // Optionally parse the packet into a specific variant
         // and handle it accordingly
@@ -28,7 +28,7 @@ async fn main() {
             }) => {
                 println!(
                     "[{:.02?}s]: {poor_signal:?} | {eeg_power:?}",
-                    Instant::now().duration_since(start_time).as_secs_f64()
+                    timer.elapsed().as_secs_f64()
                 );
             }
             Err(e) => {
