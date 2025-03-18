@@ -1,9 +1,9 @@
+use std::time::Instant;
+
 use cerebrust::{
     comm::{DataReader, PacketVariant},
     device::DeviceConfig,
 };
-
-use std::time::Instant;
 
 #[tokio::main]
 async fn main() {

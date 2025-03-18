@@ -34,9 +34,10 @@
 //! The `poll_next` method in `DataReader` returns an `Error` if there is an issue
 //! reading from the stream or if the packet is corrupted.
 
+use std::io::Error;
+
 use bluer::rfcomm::Stream;
 use futures::executor::block_on;
-use std::io::Error;
 use tokio::io::AsyncReadExt;
 
 /// Represents the different data codes used in the NeuroSky device communication.

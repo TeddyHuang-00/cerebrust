@@ -1,0 +1,6 @@
+color = "Always"
+edition = "2024"
+group_imports = "StdExternalCrate"
+imports_granularity = "Crate"
+reorder_impl_items = true
+style_edition = "2024"

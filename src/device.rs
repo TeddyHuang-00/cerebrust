@@ -28,13 +28,13 @@
 //! adapter retrieval, device discovery, and stream connection. These errors are
 //! propagated as `bluer::Result` types.
 
+use std::{io, time::Duration};
+
 use bluer::{
     Adapter, AdapterEvent, Address, Session,
     rfcomm::{SocketAddr, Stream},
 };
 use futures::{StreamExt, pin_mut};
-use std::io;
-use std::time::Duration;
 use tokio::time::timeout;
 
 /// Configuration for connecting to a NeuroSky device over Bluetooth.
