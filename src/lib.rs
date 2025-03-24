@@ -5,6 +5,10 @@
 pub mod comm;
 pub mod device;
 
+// Re-export for convenience
+pub use comm::{DataReader, Packet, PacketVariant};
+pub use device::DeviceConfig;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -17,7 +21,7 @@ mod tests {
     /// Bluetooth adapter. The device name is assumed to be "MyndBand".
     #[tokio::test]
     async fn test_build_stream_and_parse() {
-        let config = device::DeviceConfig::default()
+        let config = DeviceConfig::default()
             .with_adapter("hci0".to_string())
             .with_name("MyndBand".to_string())
             .with_channel(5);
@@ -28,7 +32,7 @@ mod tests {
         println!("Local address: {:?}", stream.as_ref().local_addr().unwrap());
         println!("Remote address: {:?}", stream.peer_addr().unwrap());
         println!("Security: {:?}", stream.as_ref().security().unwrap());
-        let mut data_reader = comm::DataReader::new(stream);
+        let mut data_reader = DataReader::new(stream);
         let packet = data_reader
             .poll_next()
             .await
