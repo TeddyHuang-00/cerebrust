@@ -44,7 +44,10 @@ pub struct DeviceConfig {
     /// If not provided, the default adapter is used.
     pub adapter: Option<String>,
     /// The name of the target device. Default: "MyndBand".
-    pub target_name: String,
+    pub target_name: Option<String>,
+    /// The address of the target device. If not provided, it will be discovered.
+    /// Otherwise, it will be used to connect directly without discovery.
+    pub address: Option<Address>,
     /// RFCOMM channel. Default: 5.
     pub channel: u8,
 }
@@ -53,7 +56,8 @@ impl Default for DeviceConfig {
     fn default() -> Self {
         Self {
             adapter: None,
-            target_name: "MyndBand".to_string(),
+            target_name: None,
+            address: None,
             channel: 5,
         }
     }
@@ -75,7 +79,7 @@ impl DeviceConfig {
     }
 
     /// Updates the target device name.
-    /// If not provided, the default name is "MyndBand".
+    /// This is used to discover the device if the address is not known.
     ///
     /// # Arguments
     ///
@@ -85,7 +89,23 @@ impl DeviceConfig {
     ///
     /// * `Self` - The updated configuration.
     pub fn with_name(mut self, name: String) -> Self {
-        self.target_name = name;
+        self.target_name = Some(name);
+        self
+    }
+
+    /// Updates the target device address.
+    /// If not provided, the device will be discovered.
+    /// Otherwise, it will be used to connect directly without discovery.
+    ///
+    /// # Arguments
+    ///
+    /// * `address` - The address of the target device.
+    ///
+    /// # Returns
+    ///
+    /// * `Self` - The updated configuration.
+    pub fn with_address(mut self, address: Address) -> Self {
+        self.address = Some(address);
         self
     }
 
@@ -130,8 +150,7 @@ impl DeviceConfig {
     ///
     /// # Arguments
     ///
-    /// * `adapter` - A reference to the Bluetooth adapter to use for discovery.
-    /// * `name` - An optional name of the target device. If not provided, defaults to "MyndBand".
+    /// * `adapter` - A reference to the Bluetooth adapter to use for discovery..
     ///
     /// # Returns
     ///
@@ -139,9 +158,19 @@ impl DeviceConfig {
     ///
     /// # Errors
     ///
-    /// This function will return an error if device discovery fails or if the device
-    /// discovery times out.
+    /// This function will return an error if no target device name is provided,
+    /// or if device discovery fails or times out.
     pub async fn try_find_device(&self, adapter: &Adapter) -> bluer::Result<Address> {
+        let target_name = match &self.target_name {
+            Some(name) => name,
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Target device name is not provided",
+                )
+                .into());
+            }
+        };
         let device_events = adapter.discover_devices().await?;
         pin_mut!(device_events);
 
@@ -150,7 +179,7 @@ impl DeviceConfig {
                 Ok(Some(AdapterEvent::DeviceAdded(addr))) => {
                     let device = adapter.device(addr)?;
                     match device.name().await? {
-                        Some(name) if name == self.target_name => {
+                        Some(name) if name == *target_name => {
                             return Ok(addr);
                         }
                         _ => continue,
@@ -199,8 +228,14 @@ impl DeviceConfig {
     /// This function will return an error if the default adapter retrieval, device
     /// discovery, or stream connection fails.
     pub async fn connect(&self) -> bluer::Result<Stream> {
-        let adapter = self.get_adapter().await?;
-        let addr = self.try_find_device(&adapter).await?;
-        self.build_connection(addr).await
+        match self.address {
+            Some(addr) => self.build_connection(addr).await,
+            None => {
+                // If no address is provided, discover the device
+                let adapter = self.get_adapter().await?;
+                let addr = self.try_find_device(&adapter).await?;
+                self.build_connection(addr).await
+            }
+        }
     }
 }
