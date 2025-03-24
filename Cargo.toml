@@ -1,6 +1,6 @@
 [package]
 name = "cerebrust"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Cerebrust is a simple, easy-to-use library for working with NeuroSky devices under Rust."
 authors = ["Nan Huang <teddyhuangnan@gmail.com>"]
@@ -13,12 +13,7 @@ categories = [
     "parser-implementations",
     "parsing",
 ]
-keywords = [
-    "neurosky",
-    "mindwave",
-    "bluetooth",
-    "bci",
-]
+keywords = ["neurosky", "mindwave", "bluetooth", "bci"]
 
 [dependencies]
 bluer = { version = "0.17.3", features = ["rfcomm", "bluetoothd"] }
