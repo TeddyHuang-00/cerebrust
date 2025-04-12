@@ -79,7 +79,7 @@ impl From<u8> for Code {
 }
 
 /// Represents the EEG power spectrum values.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Power {
     /// Delta (0.5 ~ 2.75 Hz)
     pub delta: u32,
@@ -100,7 +100,7 @@ pub struct Power {
 }
 
 /// Represents a data packet received from the NeuroSky device.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Packet {
     /// Signal quality (0 ~ 255)
     pub poor_signal: Option<u8>,
@@ -118,7 +118,7 @@ pub struct Packet {
 /// Represents the different types of packets that can be received from the
 /// NeuroSky device. Each variant corresponds to a specific combination of data
 /// that can be received.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum PacketVariant {
     /// Packet with only raw wave value @ 512Hz
     RawWave { raw_wave: i16 },
